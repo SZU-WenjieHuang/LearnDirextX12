@@ -245,6 +245,7 @@ ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
 }
 
 // Create Device
+// Adapter就像是Physical Device 是GPU，Device就是Vulkan里的 Logical Device
 ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter)
 {
     // Create Device
@@ -427,6 +428,8 @@ void UpdateRenderTargetViews(ComPtr<ID3D12Device2> device,
 }
 
 // Command Allocator
+// Command Allocator 和 Command Queue对应，一个Queue 有且只有一个 Allocator
+// Command Allocator 负责分配和管理 Command List
 ComPtr<ID3D12CommandAllocator> CreateCommandAllocator(ComPtr<ID3D12Device2> device,
     D3D12_COMMAND_LIST_TYPE type)
 {
@@ -564,7 +567,7 @@ void Render()
             D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
         g_CommandList->ResourceBarrier(1, &barrier);
 
-        // CommandList->close() 就类似Vulkan的 submit，就是把Command List提交到Queue上
+        // CommandList->close() 就类似Vulkan的 submit，就是把Command List提交到Queue上(重要)
         ThrowIfFailed(g_CommandList->Close());
 
         ID3D12CommandList* const commandLists[] = {
