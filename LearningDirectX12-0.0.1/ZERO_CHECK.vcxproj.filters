@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.1\CMakeFiles\e13df72537408efb3efb98c0738b82f8\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{07A6BCD2-BAAA-3DDB-AFA4-4131D37E326D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

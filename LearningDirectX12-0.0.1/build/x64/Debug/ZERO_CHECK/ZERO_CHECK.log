@@ -1,0 +1,8 @@
+﻿  Checking Build System
+  CMake is re-running because C:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1/build/CMakeFiles/generate.stamp is out-of-date.
+    the file 'C:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1/CMakeLists.txt'
+    is newer than 'C:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1/build/CMakeFiles/generate.stamp.depend'
+    result='-1'
+  -- Configuring done (0.5s)
+  -- Generating done (0.3s)
+  -- Build files have been written to: C:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1/build

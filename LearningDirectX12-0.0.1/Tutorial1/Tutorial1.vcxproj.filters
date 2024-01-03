@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.1\Tutorial1\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.1\Tutorial1\inc\d3dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.1\Tutorial1\inc\Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.1\Tutorial1\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{DDBAA02A-2A60-3E5C-95CB-8EE49A9BED7D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{81245384-F02C-3F65-901F-085A8AD1EE63}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

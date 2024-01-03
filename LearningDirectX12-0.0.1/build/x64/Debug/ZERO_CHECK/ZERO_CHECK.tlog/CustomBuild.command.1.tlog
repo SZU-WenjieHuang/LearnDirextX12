@@ -1,0 +1,10 @@
+^C:\USERS\JANKI\ONEDRIVE\桌面\STUDYS\2023 DIRECTX12\LEARNINGDIRECTX12-0.0.1\LEARNINGDIRECTX12-0.0.1\BUILD\CMAKEFILES\F6AE2A8E457ABC97168ABE27D02E9795\GENERATE.STAMP.RULE
+setlocal
+C:\GL\CMake\bin\cmake.exe "-SC:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1" "-BC:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.1/build/LearningDirectX12.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
