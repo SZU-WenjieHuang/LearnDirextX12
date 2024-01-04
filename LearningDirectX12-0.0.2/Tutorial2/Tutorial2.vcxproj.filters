@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial2\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial2\src\Tutorial2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial2\inc\Tutorial2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial2\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FXCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial2\shaders\VertexShader.hlsl">
+      <Filter>Resources\Shaders</Filter>
+    </FXCompile>
+    <FXCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial2\shaders\PixelShader.hlsl">
+      <Filter>Resources\Shaders</Filter>
+    </FXCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{E93C1D20-3159-3EEE-BCFA-4EE52417457F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{1E4EFB25-2312-3D48-9AF0-3ADEC155C6A0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Shaders">
+      <UniqueIdentifier>{45DEE686-CEBC-3A46-B632-C09D40D597DB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{20CD7F47-9B2A-3E6C-9668-CC7578031340}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+﻿  Building Custom Rule C:/Users/Janki/OneDrive/桌面/Studys/2023 DirectX12/LearningDirectX12-0.0.1/LearningDirectX12-0.0.2/DX12Lib/CMakeLists.txt
+  DX12LibPCH.cpp
+  Application.cpp
+  CommandQueue.cpp
+  Game.cpp
+  HighResolutionClock.cpp
+  Window.cpp
+  Generating Code...
+  DX12Lib.vcxproj -> C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\lib\Debug\DX12Lib.lib

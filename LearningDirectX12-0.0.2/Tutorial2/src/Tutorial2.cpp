@@ -77,7 +77,7 @@ void Tutorial2::UpdateBufferResource(
     auto device = Application::Get().GetDevice();
 
     size_t bufferSize = numElements * elementSize;
-
+    
     // Create a committed resource for the GPU resource in a default heap.
     ThrowIfFailed(device->CreateCommittedResource(
         &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),

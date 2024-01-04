@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\inc\d3dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\inc\Helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\Resources\Icon\app_icon.ico">
+      <Filter>Resource Files\Icon</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="C:\Users\Janki\OneDrive\桌面\Studys\2023 DirectX12\LearningDirectX12-0.0.1\LearningDirectX12-0.0.2\Tutorial1\Tutorial1.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{E93C1D20-3159-3EEE-BCFA-4EE52417457F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{4E69203A-BC5D-3E76-BF87-B716F5F98819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Icon">
+      <UniqueIdentifier>{FCA35901-7EDE-3836-B468-8AE78FFA8E1D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{20CD7F47-9B2A-3E6C-9668-CC7578031340}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
