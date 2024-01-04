@@ -118,3 +118,35 @@ end method
 
 这张图就明确标识清楚了 在CPU main里面的提交命令顺序和在GPU的 Queue里的执行顺序；是解耦的
 然后由于Double Buffering的存在，CPU每次提交完一个frame，在开始下一个frame的时候，都需要等待上一个frame执行完毕(等待它空出来的buffer)。
+
+### 07 DX12里的resource分配类型
+
+#### Committed Resources</br>
+这种资源分配方式是最常见和最简单的方式。当您创建一个已提交资源时，您需要指定资源的类型、大小和用途。然后，DirectX 12 会为该资源分配连续的内存空间，并保证该资源一直占用该内存空间，直到您显式地释放它。已提交资源适用于需要频繁更新或需要高速访问的资源，例如常量缓冲区或纹理。
+
+#### Placed Resources</br>
+已放置资源提供了更灵活的资源分配方式。与已提交资源不同，已放置资源允许您指定资源的精确内存位置。您可以通过提供资源的虚拟内存地址或 GPU 虚拟地址，将资源放置在已分配的内存区域中。这种方式适用于需要更复杂内存布局或需要与其他系统共享内存的资源。
+
+#### Reserved Resources</br>
+已放置资源提供了更灵活的资源分配方式。与已提交资源不同，已放置资源允许您指定资源的精确内存位置。您可以通过提供资源的虚拟内存地址或 GPU 虚拟地址，将资源放置在已分配的内存区域中。这种方式适用于需要更复杂内存布局或需要与其他系统共享内存的资源。
+
+总结:</br>
+Committed Resources 是最常见和简单的资源分配方式，适用于频繁更新或需要高速访问的资源。</br>
+Placed Resources允许您指定资源的精确内存位置，适用于需要更复杂内存布局或与其他系统共享内存的资源。</br>
+Reserved Resources是一种预留内存的方式，可在需要时转换为其他类型的资源，适用于动态分配和释放内存的情况。</br>
+
+### 08 Root Signature
+Root Signature就是一系列 Shader需要使用的资源的集合,主要包含三种类型:32-Bit constant； inline descriptor ；Descriptor Table。 其中其中 32-Bit constant直接包含数据，直接寻址，间接寻址的次数=0，如MVP； inline descriptor 直接包括需要频繁访问的数据和资源本身(不是指向Descriptor Heap的引用)，比如constant数组等，它但有个混淆就是它需要间接寻址次数=1；Descriptor Table 就包括了指向texture等较大数据的指针，需要间接寻址2次。可以理解成 32-Bit constant； inline descriptor  是直接把数据内嵌入Root Signature让Shader访问，而Descriptor Table就是通过指针间接访问。
+
+#### 32-Bit Constant：
+32位常量用于存储较小的常量数据，例如矩阵、向量、标志位等。这些常量数据直接嵌入到根签名中，而无需使用额外的描述符堆或描述符表。32位常量非常适合存储需要频繁访问的数据，因为它们可以直接从根签名中访问，避免了额外的访存开销。
+
+#### Inline Descriptor：
+内联描述符用于直接将某些资源的描述符放置在根签名中，而无需使用Descriptor heap和 Descriptor table(但是这里有一个疑问，为什么需要间接寻址一次？)。内联描述符适用于常量缓冲区（CBV）和包含32位（FLOAT、UINT或SINT）组件的缓冲资源（SRV、UAV）。这些资源的描述符可以直接嵌入到根签名中，使得着色器可以直接访问这些资源，而无需通过描述符表间接引用。
+
+#### Descriptor Table：
+描述符表用于存储指向资源的描述符。它是一个包含多个描述符的数组或者是一个描述符堆的引用。描述符表适用于各种类型的资源，包括纹理资源、结构化缓冲区、常量缓冲区等。通过描述符表，着色器可以通过索引或者动态索引来访问所需的资源。
+
+其实这里还有一个混淆的点，就是 Inline Descriptor 究竟是直接存数据，还是存了一个指向descriptor的指针？ 我倾向于前者，但是在文章里有一句话是: The cost of accessing a root argument in a root signature in terms of levels of indirection is zero for 32-bit constants, 1 for inline descriptors, and 2 for descriptor tables [5]. 引起了一些混淆，既然inline是直接把资源嵌入在root signature里，那为什么还需要间接引用一次？
+
+![image](./Images/Descriptor-Tables.png)</p>
