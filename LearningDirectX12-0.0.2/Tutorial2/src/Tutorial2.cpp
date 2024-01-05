@@ -31,6 +31,7 @@ constexpr const T& clamp(const T& val, const T& min, const T& max)
 }
 
 // Vertex data for a colored cube.
+// 在这个Tutorial里 每个顶点只有两个attribute: position 和 color
 struct VertexPosColor
 {
     XMFLOAT3 Position;
@@ -160,6 +161,7 @@ bool Tutorial2::LoadContent()
     };
 
     // Create a root signature.
+    // 首先是选择版本，首选是Version1.1的
     D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
     featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
     if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
@@ -168,6 +170,7 @@ bool Tutorial2::LoadContent()
     }
 
     // Allow input layout and deny unnecessary access to certain pipeline stages.
+    // 硬件上优化 只需要 Vertex Shader访问 root signature，所以其他的都deny
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
@@ -176,21 +179,27 @@ bool Tutorial2::LoadContent()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
     // A single 32-bit constant root parameter that is used by the vertex shader.
+    // 只包含了一个 Root Signature 的元素: 32-bit constant
     CD3DX12_ROOT_PARAMETER1 rootParameters[1];
     rootParameters[0].InitAsConstants(sizeof(XMMATRIX) / 4, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
+    // root signature的 description
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
     rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
 
     // Serialize the root signature.
+    // 序列化为二进制对象，目的是在运行是就可以直接从二进制数据里加载 不需要重新定义和编译 root signature
+    // 在DX12中 Blob代表大型二进制对象Binary Large Object
     ComPtr<ID3DBlob> rootSignatureBlob;
     ComPtr<ID3DBlob> errorBlob;
     ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDescription,
         featureData.HighestVersion, &rootSignatureBlob, &errorBlob));
+
     // Create the root signature.
     ThrowIfFailed(device->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(),
         rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_RootSignature)));
 
+    // 设置Pipeline
     struct PipelineStateStream
     {
         CD3DX12_PIPELINE_STATE_STREAM_ROOT_SIGNATURE pRootSignature;
@@ -202,6 +211,7 @@ bool Tutorial2::LoadContent()
         CD3DX12_PIPELINE_STATE_STREAM_RENDER_TARGET_FORMATS RTVFormats;
     } pipelineStateStream;
 
+    // Render Target
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
     rtvFormats.NumRenderTargets = 1;
     rtvFormats.RTFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -219,6 +229,7 @@ bool Tutorial2::LoadContent()
     };
     ThrowIfFailed(device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&m_PipelineState)));
 
+    // handle fence
     auto fenceValue = commandQueue->ExecuteCommandList(commandList);
     commandQueue->WaitForFenceValue(fenceValue);
 
@@ -230,6 +241,8 @@ bool Tutorial2::LoadContent()
     return true;
 }
 
+// 因为是通过ComPtr智能指针进行管理的，所以不用删除旧的；
+// 会自动替换旧的 resource，逻辑是创建了一个commit resource当作depth buffer 然后再创建一个depth view
 void Tutorial2::ResizeDepthBuffer(int width, int height)
 {
     if (m_ContentLoaded)
@@ -310,23 +323,28 @@ void Tutorial2::OnUpdate(UpdateEventArgs& e)
         totalTime = 0.0;
     }
 
-    // Update the model matrix.
+    // Update the model matrix. 
+    // model会旋转
     float angle = static_cast<float>(e.TotalTime * 90.0);
     const XMVECTOR rotationAxis = XMVectorSet(0, 1, 1, 0);
     m_ModelMatrix = XMMatrixRotationAxis(rotationAxis, XMConvertToRadians(angle));
 
     // Update the view matrix.
+    // view基本不变
     const XMVECTOR eyePosition = XMVectorSet(0, 0, -10, 1);
     const XMVECTOR focusPoint = XMVectorSet(0, 0, 0, 1);
     const XMVECTOR upDirection = XMVectorSet(0, 1, 0, 0);
     m_ViewMatrix = XMMatrixLookAtLH(eyePosition, focusPoint, upDirection);
 
-    // Update the projection matrix.
+    // Update the projection matrix. 
+    // projection会随着windows的size有所改变
     float aspectRatio = GetClientWidth() / static_cast<float>(GetClientHeight());
     m_ProjectionMatrix = XMMatrixPerspectiveFovLH(XMConvertToRadians(m_FoV), aspectRatio, 0.1f, 100.0f);
 }
 
 // Transition a resource
+// 不同的resource的state(有点像imageLayout barrier，帮助GPU更好的加载文件)
+// 包含内存布局 和访问权限
 void Tutorial2::TransitionResource(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
     Microsoft::WRL::ComPtr<ID3D12Resource> resource,
     D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
@@ -387,10 +405,13 @@ void Tutorial2::OnRender(RenderEventArgs& e)
     commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
     // Update the MVP matrix
-    XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, m_ViewMatrix);
-    mvpMatrix = XMMatrixMultiply(mvpMatrix, m_ProjectionMatrix);
+    XMMATRIX mvpMatrix = XMMatrixMultiply(m_ModelMatrix, m_ViewMatrix);  
+    mvpMatrix = XMMatrixMultiply(mvpMatrix, m_ProjectionMatrix);  
+
+    // set resources
     commandList->SetGraphicsRoot32BitConstants(0, sizeof(XMMATRIX) / 4, &mvpMatrix, 0);
 
+    // draw
     commandList->DrawIndexedInstanced(_countof(g_Indicies), 1, 0, 0, 0);
 
     // Present
