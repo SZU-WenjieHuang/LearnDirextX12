@@ -22,12 +22,12 @@ public:
     virtual void UnloadContent() override;
 protected:
     /**
-     *  Update the game logic.
+     *  Update the game logic. 更新logic
      */
     virtual void OnUpdate(UpdateEventArgs& e) override;
 
     /**
-     *  Render stuff.
+     *  Render stuff. 更新 Render
      */
     virtual void OnRender(RenderEventArgs& e) override;
 
@@ -74,6 +74,7 @@ private:
     // Vertex buffer for the cube.
     Microsoft::WRL::ComPtr<ID3D12Resource> m_VertexBuffer;
     D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
+
     // Index buffer for the cube.
     Microsoft::WRL::ComPtr<ID3D12Resource> m_IndexBuffer;
     D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
@@ -81,12 +82,14 @@ private:
     // Depth buffer.
     Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer;
     // Descriptor heap for depth buffer.
+    // 需要一个 depth-stencil view 在 desvriptor Heap里创建
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
 
     // Root signature
     Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
 
     // Pipeline state object.
+    // Pipeline state 描述了 Pipeline本身
     Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
 
     D3D12_VIEWPORT m_Viewport;

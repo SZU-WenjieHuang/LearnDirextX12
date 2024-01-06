@@ -189,6 +189,75 @@ Descriptor Heap的个数和标准通常是根据应用程序的需求和配置�
 
 渲染目标和深度目标Descriptor Heap：对于每个渲染目标和深度目标，通常会为其创建一个单独的Descriptor Heap。这些Descriptor Heap用于存储渲染目标和深度目标的视图描述符，以便在渲染过程中将它们绑定到图形管道。
 
+DescriptorAllocator用于分配多个 CPU 可见描述符的类。CPU 可见描述符用于渲染目标视图( RTV ) 和深度模板视图( DSV )。CPU 可见描述符还用于创建常量缓冲区视图( CBV )、着色器资源视图( SRV )、无序访问视图( UAV ) 以及创建采样器，但 CBV、SRV、UAV 和采样器需要相应的 GPU 可见描述符才能创建在着色器中使用。
+
 ### 13 DX12里有没有render Pass的概念
 有，可以参考这一篇:</br>
 https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-12-render-passes
+
+
+### 14 dx12 里的内存管理
+在DX12里面有一个 UploadBuffer的类，其中实现了GPU上的内存管理和分配，使用的是内存池和内存分页机制。
+
+why? 因为要是使用连续线性的内存分配方法，是用两个指针的方法进行管理，一个指针指向base，一个指针指向Offset。但是这样有两个缺点，一是之前释放的内存不能及时重用，第二个就是由于内存对齐的存在，会存在很多内部和外部碎片。
+
+![image](./Images/Linear-Allocator-Internal-Fragmentation-1024x208.png)</p>
+
+所以要用内存分页机制和内存池。
+
+GPT:</br>
+这段代码实现了一个UploadBuffer类，用于在GPU上上传资源。它确实使用了内存池和内存分页机制。
+
+该UploadBuffer类的主要功能是管理GPU上传堆（Upload Heap）中的内存分配。Upload Heap是一种用于临时存储上传到GPU的资源（如常量缓冲区数据、纹理数据等）的特殊堆。UploadBuffer类封装了对Upload Heap的操作，使资源上传过程更加方便和高效。
+
+在该类中，有一个内部结构Allocation，用于表示在GPU上的内存分配。Allocation结构包含了CPU指针（CPU）和GPU虚拟地址（GPU），用于在CPU和GPU之间传递资源数据。
+
+UploadBuffer类中的核心是Page结构，它表示GPU上传堆中的一个内存页。每个Page对象对应一个固定大小的内存页，用于存储资源数据。Page结构具有以下功能：
+
+HasSpace函数用于检查页是否有足够的空间来满足请求的内存分配。
+Allocate函数用于从页中分配内存。它会在页上进行偏移，并返回Allocation结构，其中包含了CPU指针和GPU虚拟地址。
+Reset函数用于重置页的状态，以便可以重新利用。
+UploadBuffer类还包含了一个PagePool类型的变量m_PagePool，用于存储所有的页对象。m_AvailablePages变量用于存储可用的页对象，它们当前没有被分配。m_CurrentPage变量指向当前正在使用的页对象。
+
+在Allocate函数中，首先会检查当前页是否有足够的空间来分配请求的内存。如果有空间，则从当前页中分配内存。如果当前页没有足够的空间，则会从m_AvailablePages中获取一个可用的页对象，如果没有可用的页对象，则会创建一个新的页对象。然后，从选择的页对象中进行内存分配，并返回Allocation结构。
+
+Reset函数用于释放所有分配的页，并将UploadBuffer重置为初始状态。
+
+复习一下内存分页机制的优点:
+
+1-虚拟内存扩展：应用程序可以使用比物理内存更大的虚拟地址空间。</br>
+2-内存隔离：每个应用程序都有自己的虚拟地址空间，互不干扰。</br>
+3-内存共享：多个应用程序可以共享同一物理内存页，提高资源利用率。</br>
+4-内存保护：通过页表，可以实现对内存的访问控制和保护。</br>
+
+### 15 Descriptor Heap 是CPU可见的还是GPU可见的？
+Descriptor Heap可以是CPU可见的，也可以是GPU可见的。</br>
+
+CPU可见的Descriptor Heap和GPU可见的Descriptor Heap。CPU可见的Descriptor Heap用于对描述符进行动态分配和更新，而GPU可见的Descriptor Heap则用于在着色器中使用。</br>
+
+CPU visible descriptors are used for describing:
+
+1-Render Target Views (RTV)</br>
+2-Depth-Stencil Views (DSV)</br>
+3-Constant Buffer Views (CBV)</br>
+4-Shader Resource Views (SRV)</br>
+5-Unordered Access Views (UAV)</br>
+6-Samplers</br>
+
+### 16 Descriptor Heap的分配和释放策略
+两种策略: 首次适应策略(线性查找) 和 二分查找</br>
+
+这个机制是用来管理描述符分配和释放的一种策略，称为自由链表分配器（Free List Allocator）。它通过维护一张自由链表来跟踪可用的内存分配。
+
+首先，让我们了解一下自由链表的基本概念。自由链表是一种数据结构，用于跟踪可用的内存块。每个链表节点表示一个可用内存块的位置和大小。在这种情况下，链表节点存储了内存页内的偏移量和可用内存块的大小。
+
+当需要进行新的内存分配时，会遍历自由链表，查找第一个足够大的可用内存块来满足请求。如果当前页的可用内存块无法满足请求，就会分配一个新的内存页。
+
+自由链表分配器采用了一种称为“首次适应”（first-fit）的内存分配策略。它的工作原理是从链表的头部开始，顺序查找第一个足够大的内存块。这种策略的实现相对简单，只需要对自由链表进行线性搜索，但它不是最高效的分配方法。线性搜索的最坏情况复杂度是O(n)，其中n是自由链表中的节点数量。
+
+更高效的方法是将自由块按大小进行排序，并使用二分搜索来查找足够大的块。二分搜索的复杂度是O(log2n)，其中n是要搜索的值的数量，比线性搜索更高效。
+
+为了实现按大小排序的自由链表，可以使用二叉树数据结构。每个节点表示一个可用内存块，节点的键是块的大小。通过使用二叉树，可以在搜索时更快地找到满足请求的块。
+
+![image](./Images/Free-List-Allocator-2.png)</p>
+
