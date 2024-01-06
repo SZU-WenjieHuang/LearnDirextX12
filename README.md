@@ -262,3 +262,100 @@ CPU visible descriptors are used for describing:
 ![image](./Images/Free-List-Allocator-2.png)</p>
 
 ### 17 内存回收机制(free)
+这段代码: 是用来 free descriptor heap上的 block的；</br>
+实现了一个很精妙的内存回收后的碎片合并机制；
+
+```cpp
+// FreeBlock 需要考虑回收后内存碎片上的合并
+void DescriptorAllocatorPage::FreeBlock( uint32_t offset, uint32_t numDescriptors )
+{
+    // Find the first element whose offset is greater than the specified offset.
+    // This is the block that should appear after the block that is being freed.
+    auto nextBlockIt = m_FreeListByOffset.upper_bound( offset );
+
+    // Find the block that appears before the block being freed.
+    auto prevBlockIt = nextBlockIt;
+    // If it's not the first block in the list.
+    if ( prevBlockIt != m_FreeListByOffset.begin() )
+    {
+        // Go to the previous block in the list.
+        --prevBlockIt;
+    }
+    else
+    {
+        // Otherwise, just set it to the end of the list to indicate that no
+        // block comes before the one being freed.
+        prevBlockIt = m_FreeListByOffset.end();
+    }
+
+    // Add the number of free handles back to the heap.
+    // This needs to be done before merging any blocks since merging
+    // blocks modifies the numDescriptors variable.
+    m_NumFreeHandles += numDescriptors;
+
+    // case1 前面有一个空闲的block
+    if ( prevBlockIt != m_FreeListByOffset.end() &&
+         offset == prevBlockIt->first + prevBlockIt->second.Size )
+    {
+        // The previous block is exactly behind the block that is to be freed.
+        //
+        // PrevBlock.Offset           Offset
+        // |                          |
+        // |<-----PrevBlock.Size----->|<------Size-------->|
+        //
+
+        // Increase the block size by the size of merging with the previous block.
+        offset = prevBlockIt->first;
+        numDescriptors += prevBlockIt->second.Size;
+
+        // Remove the previous block from the free list.
+        m_FreeListBySize.erase( prevBlockIt->second.FreeListBySizeIt );
+        m_FreeListByOffset.erase( prevBlockIt );
+    }
+
+    // case2 后面又一个空闲的block
+    if ( nextBlockIt != m_FreeListByOffset.end() &&
+         offset + numDescriptors == nextBlockIt->first )
+    {
+        // The next block is exactly in front of the block that is to be freed.
+        //
+        // Offset               NextBlock.Offset 
+        // |                    |
+        // |<------Size-------->|<-----NextBlock.Size----->|
+
+        // Increase the block size by the size of merging with the next block.
+        numDescriptors += nextBlockIt->second.Size;
+
+        // Remove the next block from the free list.
+        m_FreeListBySize.erase( nextBlockIt->second.FreeListBySizeIt );
+        m_FreeListByOffset.erase( nextBlockIt );
+    }
+
+    // Add the freed block to the free list. 把合并之后的block添加回去
+    AddNewBlock( offset, numDescriptors );
+}
+```
+![image](./Images/Free-List-Merge-1-1024x351.png)</p>
+
+GPT:
+这段代码是描述在释放内存块时，如何考虑合并相邻的空闲内存块以减少内存碎片化的问题。
+
+首先，代码通过迭代器nextBlockIt在m_FreeListByOffset中找到第一个偏移量大于要释放的内存块的偏移量的节点。这个节点表示紧随在要释放的内存块后面的内存块。
+
+然后，代码通过迭代器prevBlockIt找到在要释放的内存块之前出现的内存块的节点。如果这不是链表中的第一个块，则将prevBlockIt指向前一个块。否则，将prevBlockIt设置为链表的末尾，以表示没有块位于要释放的块之前。
+
+接下来，代码将释放的内存块所占用的描述符数量添加回堆中的可用描述符数量。
+
+然后，代码检查两种情况来确定是否需要合并相邻的空闲内存块：
+
+情况1：前一个内存块是空闲的，并且它的偏移量加上其大小刚好等于要释放的内存块的偏移量。这意味着前一个内存块的结束位置与要释放的内存块的起始位置相邻。
+
+在这种情况下，代码将合并前一个内存块和要释放的内存块，将其偏移量设置为前一个内存块的偏移量，并将描述符数量增加为两个块的总大小。
+然后，代码从自由链表中删除前一个内存块的节点。
+
+情况2：后一个内存块是空闲的，并且要释放的内存块的结束位置刚好等于后一个内存块的起始位置。这意味着要释放的内存块的结束位置与后一个内存块的起始位置相邻。
+
+在这种情况下，代码将合并要释放的内存块和后一个内存块，将其描述符数量增加为两个块的总大小。
+然后，代码从自由链表中删除后一个内存块的节点。
+
+其实这段代码就是手动控制内存回收的经典例子，很棒!
